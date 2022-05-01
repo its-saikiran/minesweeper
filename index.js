@@ -20,6 +20,8 @@ BODY[0].append(HEADING)
 const FIRST_DIV = document.createElement('div')
 const FORM = document.createElement('form')
 // // // TAKING INPUT PLAYER NAME HERE!!
+const h1 = document.createElement('h1')
+h1.innerHTML = '<i>Player Name:</i>'
 const INPUT = document.createElement('input')
 INPUT.required = true;
 INPUT.type = 'text';
@@ -30,6 +32,7 @@ INPUT.style = 'font-size: 30px; border: none; margin-bottom: 1em; padding-left: 
 const START_BUTTON = document.createElement('button')
 START_BUTTON.innerHTML = 'start';
 START_BUTTON.style = 'font-size: 7em; font-weight: bold; padding: 0px 40px; border: none;'
+FORM.append(h1)
 FORM.append(INPUT)
 FORM.append(START_BUTTON)
 FORM.setAttribute('onsubmit','gameStartButton()')
@@ -41,9 +44,13 @@ BODY[0].append(FIRST_DIV)
 
 
 
-const gameStartButton = () => {
+const gameStartButton = (userName=null) => {
+
     const BODY = document.getElementsByTagName('body')
-    const playerName = document.getElementById('userInp')
+    if(!userName) {
+        BODY[0].children[1].innerHTML = `<i>${document.getElementById('userInp').value}</i> is playing game!`;
+    }
+
     // // // CREATING CONTAINER!!
     const SECTION = document.createElement('section');
     // // // CREATING BOXES!!
@@ -58,7 +65,6 @@ const gameStartButton = () => {
         SECTION.append(DIV);
     };
     SECTION.style = 'display: grid; grid-template-columns: repeat(15,60px); border: 2px solid;'
-    BODY[0].children[1].innerHTML = `<i>${playerName.value}</i> is playing game!`
     BODY[0].replaceChild(SECTION,BODY[0].children[2])
     // console.log(BODY[0])
 
@@ -79,18 +85,51 @@ const gameStartButton = () => {
 // // // CLICKED FUNCTION IS DEFINED HERE FOR CHECKING BOMBS!!
 const clickedFun = (id) => {
     if(document.getElementById(id).textContent==='BoM') {
+       
         document.getElementById(id).innerHTML = '<img src="./bomb.svg" alt="BoM" style="height: 30px; width: 30px;" />'
         document.getElementById(id).style = 'background-color: red; border: 3px solid black; display: flex; justify-content: center; align-items: center;'
+
+        const BODY = document.getElementsByTagName('body')
+        const GAMEOVER = document.createElement('div')
+        const userName = BODY[0].children[1].innerHTML;
         setTimeout(() => {
             // // // GAME OVER HERE!!
-            BODY[0].innerHTML = 'GAME OVER!'
-            BODY[0].style = 'height: 90vh; font-size: 10rem; font-weight: bolder; display: flex; align-items: center; justify-content: center; color: gray;'
-        }, 600);
+            GAMEOVER.innerHTML = 'GAME OVER!'
+            GAMEOVER.style = 'height: 80vh; width: 75vw; font-size: 9rem; font-weight: bolder; color: red; display: flex; justify-content: space-around; align-items: center;'
+            BODY[0].replaceChild(GAMEOVER,BODY[0].children[2])
+        }, 1000);
+        
 
         setTimeout(() => {
-            // // // STARTING GAME AGAIN!!
-            location.reload();
-        },3000)
+            GAMEOVER.innerHTML=''
+            
+            // // // GAME AGAIN STARTING FROM HERE!!
+            const playAgain = () => {
+                gameStartButton(userName)
+            }
+            
+            // // // GAME EXITS HERE!!
+            const exitFun = () => {
+                GAMEOVER.innerHTML = `${userName.slice(0,userName.length-16)} exits the game!`
+                GAMEOVER.style = 'height: 80vh; width: 75vw; font-size: 7rem; font-weight: bolder; color: green; display: flex; justify-content: center; align-items: center;'
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+            
+            const RESTART = document.createElement('button');
+            RESTART.innerHTML = 'Play again';
+            RESTART.addEventListener('click',playAgain);
+            RESTART.style = 'font-size: 5rem; font-weight: bolder; border: none; padding: 0px 30px;'
+            const EXIT = document.createElement('button');
+            EXIT.innerHTML = 'Exit';
+            EXIT.addEventListener('click',exitFun);
+            EXIT.style = 'font-size: 5rem; font-weight: bolder; border: none; padding: 0px 30px;'
+            GAMEOVER.append(RESTART)
+            GAMEOVER.append(EXIT)
+            GAMEOVER.style = 'background-color: orange; height: 80vh; width: 75vw; font-size: 9rem; font-weight: bolder; color: gray; display: flex; justify-content: space-around; align-items: center;'
+        }, 3500);
+
     }else{
         // // // MAKING CALL HERE TO FIND NEIGHBOUR BOMBS!!
         countingNeighbourBombs(id);
@@ -148,3 +187,20 @@ const countingNeighbourBombs = (id) => {
         document.getElementById(id).innerHTML = `${ count }`
     } 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
